@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>77b634bc-98ba-4954-bcc6-79dca125f3e4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>CPEG_586_Assignment6_B.py</StartupFile>
+    <StartupFile>SiameseMNIST.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -21,7 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CPEG_586_Assignment6_B.py" />
+    <Compile Include="Siamese.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SiameseMNIST.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

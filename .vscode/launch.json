@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "S:\\Users\\Jkara\\OneDrive\\Documents\\CPEG_586\\Assignments_Workspace\\CPEG_586_Assignment6_B\\CPEG_586_Assignment6_B.py",
+            "program": "S:\\Users\\Jkara\\OneDrive\\Documents\\CPEG_586\\Assignments_Workspace\\CPEG_586_Assignment6_B\\SiameseMNIST.py",
             "console": "integratedTerminal"
         }
     ]
