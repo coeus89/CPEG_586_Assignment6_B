@@ -1,12 +1,12 @@
-#import tensorflow as tf
-import tensorflow.compat.v1 as tf
-import os
-import sys
+import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+#import tensorflow.compat.v1 as tf
 import matplotlib
 import matplotlib.pyplot as plt
 from Siamese import Siamese
 import numpy as np
+import sys
+#tf.compat.v1.disable_v2_behavior()
 
 def visualize(embed,labels):
     labelset = set(labels.tolist())
@@ -24,13 +24,27 @@ def main():
     # Load MNIST dataset
     mnist = input_data.read_data_sets('MNIST_data', one_hot = False)
     mnist_test_labels = mnist.test.labels
+    
+    # Load MNIST dataset
+    mnist = tf.keras.datasets.mnist
+    (x_test, y_test),(x_train,y_train) = mnist.load_data()
+    x_train, x_test = x_train / 255.0, x_test / 255.0
+    x_train, x_test = tf.reshape(x_train,[10000,784]),tf.reshape(x_test,[60000,784])
+    # mnist = input_data.read_data_sets('MNIST_data', one_hot = False)
+    mnist = (x_train, y_train)
+    #mnist_test_labels = mnist.test.labels
+    mnist_test_labels = y_train
     siamese = Siamese()
     siamese.trainSiamese(mnist,5000,100)
+    #test = keras.Sequential([
+    #    keras.layers.Conv2D(2,5,activation='relu',input_shape=(6,28,28,1))(x),
+    #    keras.layers.AveragePooling2D()
+    #    ])
 
     # Test model
     embed = siamese.test_model(input = mnist.test.images)
-    #embed.tofile('embed.txt')
-    #embed = np.fromfile('embed.txt', dtype = np.float32)
+    # embed.tofile('embed.txt')
+    # embed = np.fromfile('embed.txt', dtype = np.float32)
     embed = embed.reshape([-1, 2])
     visualize(embed, mnist_test_labels)
 

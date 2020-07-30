@@ -1,13 +1,17 @@
-#import tensorflow as tf
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
+#import tensorflow.compat.v1 as tf
+#from tensorflow import nn.conv2d
 import os
-from tensorflow.examples.tutorials.mnist import input_data
+from sklearn.utils import shuffle
+import numpy as np
+#from tensorflow.examples.tutorials.mnist import input_data
+#tf.compat.v1.disable_v2_behavior()
 
 class Siamese(object):
     def __init__(self):
         # This is a TensorFlow v1 application so i have to include code to diable some v2 functionality.
-        tf.compat.v1.disable_v2_behavior()
-        tf.compat.v1.disable_eager_execution() # Only needed for v1 code with sessions ect...
+        # tf.compat.v1.disable_v2_behavior()
+        # tf.compat.v1.disable_eager_execution() # Only needed for v1 code with sessions ect...
         #----set up place holders for inputs and labels for the siamese network---
         # two input placeholders for Siamese network
 
@@ -45,6 +49,24 @@ class Siamese(object):
         out = tf.add(tf.matmul(tf_input,W), b)
         return out
     
+    def CNNLayer(self, tf_input, KernelSize, NumFeatureMaps, variable_name):
+        tf_weight_initializer = tf.random_normal_initializer(mean = 0, stdev = 0.01)
+        NumFeaturePrevLayer = tf_input.get_shape()[0]
+        k = tf.get_variable(
+            name = variable_name + "K",
+            dtype = tf.float32,
+            shape = [NumFeaturePrevLayer,NumFeatureMaps,KernelSize,KernelSize],
+            initializer = tf_weight_initializer
+        )
+        b = tf.get_variable(
+            name = variable_name + 'b',
+            dtype = tf.float32,
+            shape=[NumFeatureMaps]
+        )
+        # do i need to do a for loop for the different kernels?
+
+        out = tf.add(tf.nn.conv2d(tf_input,k,padding='VALID'),b) # do i need to do strides in conv2d?
+
     def network(self, tf_input):
         # Setup FNN
         fc1 = self.layer(tf_input = tf_input,num_hidden_units = 1024,variable_name='fc1')
@@ -87,9 +109,21 @@ class Siamese(object):
 
     def trainSiamese(self,mnist,numIterations,batchSize=100):
         # Train the network
+        num_batches = mnist[0].shape[0]
+        # x_train1,y_train1 = tf.data.Dataset.from_tensor_slices(mnist[0]),tf.data.Dataset.from_tensor_slices(mnist[1])
+        # x_train2,y_train2 = tf.data.Dataset.from_tensor_slices(mnist[0]),tf.data.Dataset.from_tensor_slices(mnist[1])
+        x_train1,y_train1 = mnist[0],mnist[1]
+        x_train2,y_train2 = mnist[0],mnist[1]
         for i in range(numIterations):
-            input1, y1 = mnist.train.next_batch(batchSize)
-            input2, y2 = mnist.train.next_batch(batchSize)
+            # if (i == 0):
+            #     x_train1,y_train1 = shuffle(mnist[0],mnist[1])
+            #     x_train2,y_train2 = shuffle(mnist[0],mnist[1])
+            iter1 = (i % num_batches) * batchSize
+            #input1, y1 = x_train1.batch(batchSize), y_train1.batch(batchSize) 
+            input1, y1 = x_train1[iter1:iter1 + batchSize], y_train1[iter1:iter1 + batchSize]
+            input2, y2 = x_train2[iter1:iter1 + batchSize], y_train2[iter1:iter1 + batchSize]
+            #input1, y1 = mnist.train.next_batch(batchSize)
+            #input2, y2 = mnist.train.next_batch(batchSize)
             label = (y1 == y2).astype('float')
             _, trainingLoss = self.sess.run([self.optimizer, self.loss],feed_dict = {self.tf_inputA: input1, self.tf_inputB: input2,self.tf_Y: label})
             if i % 50 == 0:
